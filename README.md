@@ -1,26 +1,18 @@
 # 🚗 ESP32 Car - WiFi Remote Control
 
-ESP32 पर आधारित एक स्मार्ट कार जिसे WiFi के माध्यम से किसी भी मोबाइल या कंप्यूटर से कंट्रोल किया जा सकता है।
-
 A smart car based on ESP32 that can be controlled via WiFi from any mobile phone or computer.
 
-## 📋 Table of Contents / विषय सूची
-- [Project Overview](#-project-overview--परियोजना-अवलोकन)
+## 📋 Table of Contents 
+- [Project Overview](#-project-overview)
 - [Features](#-features--विशेषताएं)
-- [Components Required](#-components-required--आवश्यक-सामग्री)
-- [Circuit Diagram](#-circuit-diagram--सर्किट-डायग्राम)
-- [Installation](#-installation--इंस्टॉलेशन)
-- [Usage](#-usage--उपयोग)
-- [How It Works](#-how-it-works--यह-कैसे-काम-करता-है)
-- [Troubleshooting](#-troubleshooting--समस्या-निवारण)
+- [Components Required](#-components-required)
+- [Circuit Diagram](#-circuit-diagram)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [How It Works](#-how-it-works)
+- [Troubleshooting](#-troubleshooting)
 
-## 🎯 Project Overview / परियोजना अवलोकन
-
-### हिंदी में
-यह प्रोजेक्ट एक ESP32 माइक्रोकंट्रोलर पर आधारित रिमोट कंट्रोल कार है। इस कार को आप अपने मोबाइल फोन या लैपटॉप से WiFi के माध्यम से कंट्रोल कर सकते हैं। ESP32 एक वेब सर्वर बनाता है जो एक सुंदर वेब इंटरफेस प्रदान करता है जिसमें:
-- आगे, पीछे, बाएं, दाएं जाने के बटन
-- स्टॉप बटन
-- स्पीड कंट्रोल स्लाइडर
+## 🎯 Project Overview
 
 ### English
 This project is a remote control car based on ESP32 microcontroller. You can control this car from your mobile phone or laptop via WiFi. The ESP32 creates a web server that provides a beautiful web interface with:
@@ -30,34 +22,34 @@ This project is a remote control car based on ESP32 microcontroller. You can con
 
 ## ✨ Features / विशेषताएं
 
-- 📱 **Web-based Remote Control** - किसी भी डिवाइस से ब्राउज़र में खोलें
-- 🎮 **Easy Controls** - सरल और आकर्षक UI
-- ⚡ **Speed Control** - गति नियंत्रण के लिए स्लाइडर
-- 📶 **WiFi Connectivity** - बिना तार के नियंत्रण
-- 🎨 **Responsive Design** - मोबाइल और डेस्कटॉप दोनों पर काम करता है
-- 🔄 **Real-time Control** - तुरंत प्रतिक्रिया
+- 📱 **Web-based Remote Control** 
+- 🎮 **Easy Controls** 
+- ⚡ **Speed Control** 
+- 📶 **WiFi Connectivity** 
+- 🎨 **Responsive Design** 
+- 🔄 **Real-time Control** 
 
-## 🛠️ Components Required / आवश्यक सामग्री
+## 🛠️ Components Required 
 
-### Electronics / इलेक्ट्रॉनिक्स
-1. **ESP32 Development Board** (1x) - मुख्य माइक्रोकंट्रोलर
-2. **L298N Motor Driver Module** (1x) - मोटर ड्राइवर
-3. **DC Gear Motors** (4x or 2x) - कार के लिए मोटर
-4. **Robot Car Chassis** (1x) - कार का ढांचा
-5. **Wheels** (4x) - पहिये
-6. **18650 Batteries** (2x) या **9V Battery** (1x) - पावर सप्लाई
+### Electronics 
+1. **ESP32 Development Board** (1x) 
+2. **L298N Motor Driver Module** (1x) 
+3. **DC Gear Motors** (4x or 2x) 
+4. **Robot Car Chassis** (1x) 
+5. **Wheels** (4x)
+6. **18650 Batteries** (2x) या **9V Battery** (1x) 
 7. **Battery Holder** (1x)
-8. **Jumper Wires** - कनेक्शन के लिए तार
-9. **Breadboard** (Optional) - परीक्षण के लिए
+8. **Jumper Wires** 
+9. **Breadboard** (Optional) 
 
-### Tools / उपकरण
+### Tools 
 - Soldering Iron (optional)
 - Screwdriver
 - Wire Stripper
 
-## 🔌 Circuit Diagram / सर्किट डायग्राम
+## 🔌 Circuit Diagram 
 
-### Pin Connections / पिन कनेक्शन
+### Pin Connections 
 
 #### ESP32 to L298N Motor Driver
 ```
@@ -81,10 +73,10 @@ OUT3, OUT4   →    Right Motors
 ```
 Battery (+)  →    L298N 12V Input
 Battery (-)  →    L298N GND
-L298N 5V Out →    ESP32 5V (या अलग से ESP32 को पावर दें)
+L298N 5V Out →    ESP32 5V
 ```
 
-### Wiring Diagram / वायरिंग डायग्राम
+### Wiring Diagram 
 ```
                     ESP32
                    ┌─────┐
@@ -116,9 +108,9 @@ L298N 5V Out →    ESP32 5V (या अलग से ESP32 को पावर 
                   (7.4-12V)         │
 ```
 
-## 💻 Installation / इंस्टॉलेशन
+## 💻 Installation 
 
-### Step 1: Arduino IDE Setup / Arduino IDE सेटअप
+### Step 1: Arduino IDE Setup / Arduino IDE 
 
 1. **Arduino IDE डाउनलोड करें**
    - https://www.arduino.cc/en/software से डाउनलोड करें
