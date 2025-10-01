@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>ESP32 Controller</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="ESP32 Controller" />
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiRVNQMzIgQ29udHJvbGxlciIsInNob3J0X25hbWUiOiJFU1AzMiIsInN0YXJ0X3VybCI6Ii8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjMDAwMDAwIiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjNhV1IwYUQwaU1USTRJaUJvWldsbmFIUTlJakV5T0NJZ2RtbGxkMEp2ZUQwaU1DQXdJREV5T0NBeU9EZ2lJR1pwYkd3OUltNXZibVVpSUhodGJHNXpQU0pvZEhSd09pOHZkM2QzTG5jekxtOXlaeTh5TURBd0wzTjJaeUkrUEhCaGRHZ2dabWxzYkQwaWFHRnNJaUJrUFNKTk5qUWdPVGhzTkRBdE5UUmhNVEl1T0RJZ01USXVPREF1TFdGc05qUXRPVGhaVFRrd01DQXhOVEZqTFRFeExqSTNJREF0TWpBdU9EWTNNVEV1TXpZdE1qQXVPRGMzTXpFdU16WWdNSEJzTFRFeUxqWnlNVEl1TmpCZklTVXNMUzR6UVRFeUxqZ3lJREV5TGpneUlEQWdNVEVnTVNBek1TQXpNVXd0TVRJdU5qa3lNVEl1TmpCZklsRmlNVEl1T0RJZ01USXVPREZHV1VoVU9EQmhNUzQzTlNBeExqYzFJREFnTVNBd01TQXlMalV4TGpJMGJERTNMamhzTmpOak5DNHdOaUF4TGpBNElEY3VNeUF6TGpFMUlEZ3VNamd1TjJnNE5TNDVZeTQyTmlBeUxqTTJJRE11TlRrZ055NDJPQ0EwTGpNMElERTFMakZzTmpJdU5qUmlNaTQzTnlBekxqazNJRFF1TkRnZ055NDBOQ0ExTGpJNUlERXdMalJzTFRReUxqVXpZaTAwTGpRMUxTNDJOaTQxT1NBNExqQTJMUzR4T0NBeE1DNDVZV2hVVG5GMllTNDBOeTQwTnlBd0lEQXROeTR5TFRJM0xqSTJhQ3R5TkRjdU5EZGhORGN1TkRjZ05EY3VORGNnTUNBd0lERXpMamcwSURJM0xqSTJTSGduV1VoVU9EQmhNUzQzTlNBeExqYzFJREFnTVNBd0lERXROaTQxT1NFeU5pNDJZUzQwTnlBdU5EY2dNQ0F3SUNBdU1UZ3RNVEF1T1VnMk5HdE1Pam9wTWpZdU5rUjBJaVlqTUVaVFFVWkJUME5HWjNGQmJFNW5PbGxxWm1Ga1lsZGlkV1k0Y1MwdGRtZHZhM0JpUVMxUWVHOWhXVUJJWWpVNVFXdDNaak15WjNCWFQyMWxhQ29qYldscVppSTZjeVJjWVNBNE9TNDJNVGdrT0Q1c0xUa3VOaUE1TGpZdE9TNDJhamc1TGpZdE9UWnNNVE14TGpKaU1tNXNOblI2ZFE9PSIsInNpemVzIjoiMTI4eDEyOCIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==" />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'inter': ['Inter', 'system-ui', 'sans-serif'],
+          },
+          boxShadow: {
+            'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+            'card': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    * { font-family: 'Inter', system-ui, sans-serif; }
+    
+    .page { display: none; }
+    .page.active { display: block; }
+    
+    .nav-item.active { color: #000; }
+    .nav-item.active svg { stroke: #000; }
+    
+    .control-btn {
+      transition: all 0.15s ease;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+    
+    .control-btn:active {
+      transform: scale(0.95);
+      background-color: #f3f4f6;
+    }
+    
+    .ai-chat {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .ai-chat::-webkit-scrollbar { width: 3px; }
+    .ai-chat::-webkit-scrollbar-track { background: transparent; }
+    .ai-chat::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+    
+    /* PWA Install button */
+    .install-prompt { display: none; }
+    
+    /* Smooth transitions */
+    * { transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease; }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900 font-inter overflow-x-hidden">
+  <!-- Status Bar -->
+  <div class="fixed w-full bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-2">
+      <div id="statusDot" class="w-2 h-2 bg-red-400 rounded-full"></div>
+      <span id="statusText" class="text-sm font-medium text-gray-600">Disconnected</span>
+    </div>
+    <button id="installBtn" class="install-prompt text-xs bg-black text-white px-3 py-1 rounded-full">Install App</button>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="pb-20 pt-10 min-h-screen">
+    
+    <!-- Control Page -->
+    <div id="controlPage" class="page active px-4 py-6">
+      <div class="max-w-sm mx-auto space-y-6">
+        
+        <!-- Connection Card -->
+        <div class="bg-white rounded-2xl p-6 shadow-soft border border-gray-100">
+          <h2 class="text-lg font-semibold mb-4">Connection</h2>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="text-sm font-medium text-gray-700 mb-1 block">Broker URL</label>
+              <input id="broker" value="wss://broker.hivemq.com:8884/mqtt"
+                class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent" />
+            </div>
+            
+            <div>
+              <label class="text-sm font-medium text-gray-700 mb-1 block">Topic</label>
+              <input id="topic" value="esp32/car/SATYA/7fA9xqL2wB3z9C1k/commands"
+                class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent" />
+            </div>
+
+
+            <div class="flex gap-3">
+              <button id="connectBtn" class="flex-1 py-2.5 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800">Connect</button>
+              <button id="disconnectBtn" class="flex-1 py-2.5 border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50">Disconnect</button>
+            </div>
+          </div>
+        </div>
+        
+
+        <!-- Control Pad -->
+        <div class="bg-white rounded-2xl p-6 shadow-soft border border-gray-100">
+          <h2 class="text-lg font-semibold mb-4">Manual Control</h2>
+          
+          <div class="grid grid-cols-3 gap-3 mb-6">
+            <div></div>
+            <button id="forward" class="control-btn aspect-square rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center text-2xl">↑</button>
+            <div></div>
+
+            <button id="left" class="control-btn aspect-square rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center text-2xl">←</button>
+            <button id="stop" class="control-btn aspect-square rounded-xl bg-red-50 border border-red-200 flex items-center justify-center text-2xl text-red-600">⏹</button>
+            <button id="right" class="control-btn aspect-square rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center text-2xl">→</button>
+
+            <div></div>
+            <button id="backward" class="control-btn aspect-square rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center text-2xl">↓</button>
+            <div></div>
+          </div>
+
+
+
+          <div>
+            <label class="text-sm font-medium text-gray-700 mb-2 block">Custom Command: </label>
+            <div class="flex gap-2">
+              <input id="custom" placeholder="honk, led_on, buzzer..."
+                class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent" />
+              <button id="sendCustom" class="px-4 py-2 bg-gray-100 rounded-lg text-sm font-medium hover:bg-gray-200">Send</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="lastCommand" class="text-center text-sm text-gray-500">Last command:-</div>
+      </div>
+    </div>
+
+    <!-- AI Chat Page -->
+    <div id="aiPage" class="page px-4 py-6">
+      <div class="max-w-sm mx-auto space-y-6">
+        
+        <div class="bg-white rounded-2xl p-6 shadow-soft border border-gray-100">
+          <h2 class="text-lg font-semibold mb-4">AI Assistant</h2>
+          
+          <div id="aiChat" class="ai-chat bg-gray-50 rounded-xl p-4 mb-4 min-h-[250px]">
+            <div class="text-gray-500 text-sm">AI: Hi! Tell me how to control the car. Example: "Go forward for 2 seconds then turn right"</div>
+          </div>
+          
+          <div class="flex gap-2">
+            <input id="aiInput" placeholder="Tell the car what to do..."
+              class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent" />
+            <button id="sendAI" class="px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800">Send</button>
+          </div>
+          
+          <div id="aiStatus" class="text-xs text-gray-500 mt-2"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Page -->
+    <div id="settingsPage" class="page px-4 py-6">
+      <div class="max-w-sm mx-auto space-y-6">
+        
+        <div class="bg-white rounded-2xl p-6 shadow-soft border border-gray-100">
+          <h2 class="text-lg font-semibold mb-4">Settings</h2>
+          
+          <div class="space-y-4">
+            <div class="flex items-center justify-between py-3 border-b border-gray-100">
+              <span class="text-sm font-medium">Vibration Feedback</span>
+              <input type="checkbox" id="vibrationToggle" class="rounded">
+            </div>
+            
+            <div class="flex items-center justify-between py-3 border-b border-gray-100">
+              <span class="text-sm font-medium">Sound Effects</span>
+              <input type="checkbox" id="soundToggle" class="rounded">
+            </div>
+            
+            <div class="py-3">
+              <span class="text-sm font-medium block mb-2">Command Timeout (ms)</span>
+              <input type="range" id="timeoutSlider" min="100" max="2000" value="500" class="w-full">
+              <span id="timeoutValue" class="text-xs text-gray-500">500ms</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-soft border border-gray-100">
+          <h3 class="font-semibold mb-3">About</h3>
+          <p class="text-sm text-gray-600 mb-2">ESP32 Controller v1.0</p>
+          <p class="text-xs text-gray-500">A PWA for controlling ESP32 RC cars with AI assistance</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+    <div class="flex">
+      <button class="nav-item active flex-1 flex flex-col items-center py-2 px-1" data-page="controlPage">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
+        </svg>
+        <span class="text-xs mt-1">Control</span>
+      </button>
+      
+      <button class="nav-item flex-1 flex flex-col items-center py-2 px-1 text-gray-400" data-page="aiPage">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span class="text-xs mt-1">AI Chat</span>
+      </button>
+      
+      <button class="nav-item flex-1 flex flex-col items-center py-2 px-1 text-gray-400" data-page="settingsPage">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span class="text-xs mt-1">Settings</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script>
+    const $ = id => document.getElementById(id);
+    let client = null;
+    let commandQueue = [];
+    let isExecutingCommands = false;
+
+    // AI System Prompt
+    const SYSTEM_PROMPT = `You are an ESP32 RC car controller AI. Convert natural language commands to JSON format.
+
+Available commands: forward, backward, left, right, stop, honk, led_on, led_off, buzzer
+
+IMPORTANT: Always respond with ONLY a JSON array of commands. Each command must have:
+- "action": one of the available commands
+- "duration": time in seconds (use 0 for instant commands like stop, honk)
+
+Examples:
+User: "Go forward for 2 seconds"
+Response: [{"action": "forward", "duration": 2}]
+
+User: "Move forward 3 seconds, then turn right for 1 second"
+Response: [{"action": "forward", "duration": 3}, {"action": "right", "duration": 1}]
+
+User: "Go backward a bit then stop"
+Response: [{"action": "backward", "duration": 1}, {"action": "stop", "duration": 0}]
+
+Always respond with valid JSON only, no explanations or markdown.`;
+
+    // PWA Install
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      $('installBtn').style.display = 'block';
+    });
+
+    $('installBtn').addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        $('installBtn').style.display = 'none';
+      }
+    });
+
+    // Navigation
+    function switchPage(pageId) {
+      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+      
+      $(pageId).classList.add('active');
+      document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+    }
+
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const pageId = item.getAttribute('data-page');
+        switchPage(pageId);
+        
+        // Haptic feedback
+        if (navigator.vibrate && $('vibrationToggle').checked) {
+          navigator.vibrate(50);
+        }
+      });
+    });
+
+    // Status management
+    function setStatus(status, isConnected = false) {
+      $('statusText').textContent = status;
+      $('statusDot').className = `w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'}`;
+    }
+
+    function setAIStatus(s) { $('aiStatus').textContent = s; }
+
+    // MQTT Connection
+    function connect() {
+      const broker = $('broker').value.trim();
+      setStatus('Connecting...', false);
+      try {
+        client = mqtt.connect(broker, {
+          clientId: 'web-ai-' + Math.random().toString(16).slice(2,10),
+          clean: true, 
+          keepalive: 30
+        });
+      } catch(e) { 
+        setStatus('Connection error', false); 
+        return; 
+      }
+      
+      client.on('connect', () => setStatus('Connected', true));
+      client.on('error', (err) => setStatus('Error: ' + (err && err.message), false));
+      client.on('close', () => setStatus('Disconnected', false));
+    }
+
+    function disconnect() {
+      if (client) client.end();
+      client = null;
+      setStatus('Disconnected', false);
+    }
+
+    function publish(cmd) {
+      const topic = $('topic').value.trim();
+      if (!client || !client.connected) { 
+        alert('Not connected to MQTT broker!'); 
+        return false; 
+      }
+      client.publish(topic, cmd);
+      $('lastCommand').textContent = 'Last: ' + cmd;
+      return true;
+    }
+
+    // AI Chat
+    function addChatMessage(sender, message, isError = false) {
+      const chat = $('aiChat');
+      const div = document.createElement('div');
+      div.className = `text-sm mb-2 ${isError ? 'text-red-500' : 'text-gray-700'}`;
+      div.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    // Clean and parse JSON response from AI
+    function cleanAndParseJSON(text) {
+      try {
+        console.log('Original AI response:', text);
+        
+        // Step 1: Remove thinking tags completely
+        let cleaned = text.replace(/<think>[\s\S]*?<\/think>/gi, '');
+        
+        // Step 2: Remove markdown code blocks
+        cleaned = cleaned.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+        
+        // Step 3: Remove any remaining HTML-like tags
+        cleaned = cleaned.replace(/<[^>]*>/g, '');
+        
+        // Step 4: Trim whitespace
+        cleaned = cleaned.trim();
+        
+        console.log('After removing think tags:', cleaned);
+        
+        // Step 5: Find JSON content - look for [ or { that starts actual JSON
+        const jsonStart = Math.min(
+          cleaned.indexOf('[') !== -1 ? cleaned.indexOf('[') : Infinity,
+          cleaned.indexOf('{') !== -1 ? cleaned.indexOf('{') : Infinity
+        );
+        
+        if (jsonStart !== Infinity) {
+          cleaned = cleaned.substring(jsonStart);
+        }
+        
+        // Step 6: Remove any text after the last ] or }
+        const lastBracket = Math.max(cleaned.lastIndexOf(']'), cleaned.lastIndexOf('}'));
+        if (lastBracket !== -1) {
+          cleaned = cleaned.substring(0, lastBracket + 1);
+        }
+        
+        console.log('Final cleaned JSON:', cleaned);
+        
+        // Step 7: Try to parse
+        const parsed = JSON.parse(cleaned);
+        
+        // Step 8: If it's a single object, wrap in array
+        if (!Array.isArray(parsed)) {
+          return [parsed];
+        }
+        
+        return parsed;
+      } catch (e) {
+        console.error('JSON parse error:', e, 'Original text:', text);
+        throw new Error('Could not parse AI response as JSON. Please try rephrasing your command.');
+      }
+    }
+
+    // Execute AI commands with timing
+    async function executeCommands(commands) {
+      if (isExecutingCommands) {
+        addChatMessage('System', 'Already executing commands, please wait...', true);
+        return;
+      }
+      
+      isExecutingCommands = true;
+      addChatMessage('System', `Executing ${commands.length} command(s)...`);
+      
+      for (let i = 0; i < commands.length; i++) {
+        const cmd = commands[i];
+        
+        if (!cmd.action || typeof cmd.duration !== 'number') {
+          addChatMessage('System', `Invalid command format: ${JSON.stringify(cmd)}`, true);
+          continue;
+        }
+        
+        addChatMessage('System', `${i+1}/${commands.length}: ${cmd.action} for ${cmd.duration}s`);
+        
+        // Send command
+        if (!publish(cmd.action)) {
+          break; // Stop if MQTT not connected
+        }
+        
+        // Wait for duration
+        if (cmd.duration > 0) {
+          await new Promise(resolve => setTimeout(resolve, cmd.duration * 1000));
+          
+          // Send stop command after duration (except for stop/instant commands)
+          if (cmd.action !== 'stop' && cmd.action !== 'honk' && cmd.action !== 'led_on' && cmd.action !== 'led_off' && cmd.action !== 'buzzer') {
+            publish('stop');
+          }
+        }
+      }
+      
+      isExecutingCommands = false;
+      addChatMessage('System', 'All commands executed! ✅');
+    }
+
+    // Call AI API
+    async function callAI(userMessage) {
+      setAIStatus('🤖 Thinking...');
+      
+      try {
+        const response = await fetch('https://ai.hackclub.com/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messages: [
+              { role: 'system', content: SYSTEM_PROMPT },
+              { role: 'user', content: userMessage }
+            ]
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`AI API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const aiResponse = data.choices[0].message.content;
+        
+        setAIStatus('');
+        addChatMessage('AI', aiResponse);
+        
+        // Parse and execute commands
+        const commands = cleanAndParseJSON(aiResponse);
+        await executeCommands(commands);
+        
+      } catch (error) {
+        console.error('AI Error:', error);
+        setAIStatus('');
+        addChatMessage('System', `Error: ${error.message}`, true);
+      }
+    }
+
+    // Hold-to-control helper
+    function bindHold(btnId, command) {
+      const btn = $(btnId);
+      const start = () => {
+        publish(command);
+        if (navigator.vibrate && $('vibrationToggle').checked) {
+          navigator.vibrate(100);
+        }
+      };
+      const stop = () => publish('stop');
+      
+      btn.onmousedown = start;
+      btn.onmouseup = stop;
+      btn.onmouseleave = stop;
+      btn.ontouchstart = (e) => { e.preventDefault(); start(); };
+      btn.ontouchend = stop;
+    }
+
+    // Initialize everything
+    function init() {
+      // Connect/disconnect
+      $('connectBtn').onclick = connect;
+      $('disconnectBtn').onclick = disconnect;
+
+      // Bind hold controls
+      bindHold('forward', 'forward');
+      bindHold('backward', 'backward');
+      bindHold('left', 'left');
+      bindHold('right', 'right');
+
+      // Stop button
+      $('stop').onclick = () => publish('stop');
+
+      // Custom command
+      $('sendCustom').onclick = () => {
+        const v = $('custom').value.trim();
+        if (!v) return alert('Enter custom command');
+        publish(v);
+        $('custom').value = '';
+      };
+
+      // AI functionality
+      $('sendAI').onclick = async () => {
+        const input = $('aiInput').value.trim();
+        if (!input) return alert('Enter a command for the AI');
+        
+        addChatMessage('You', input);
+        $('aiInput').value = '';
+        
+        await callAI(input);
+      };
+
+      // Enter key support
+      $('custom').onkeypress = (e) => {
+        if (e.key === 'Enter') $('sendCustom').click();
+      };
+      
+      $('aiInput').onkeypress = (e) => {
+        if (e.key === 'Enter') $('sendAI').click();
+      };
+
+      // Settings
+      $('timeoutSlider').oninput = (e) => {
+        $('timeoutValue').textContent = e.target.value + 'ms';
+      };
+
+      // Initialize status
+      setStatus('Disconnected', false);
+    }
+
+    // Start when page loads
+    document.addEventListener('DOMContentLoaded', init);
+
+    // Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`
+        const CACHE_NAME = 'esp32-controller-v1';
+        const urlsToCache = ['/'];
+        
+        self.addEventListener('install', event => {
+          event.waitUntil(
+            caches.open(CACHE_NAME)
+              .then(cache => cache.addAll(urlsToCache))
+          );
+        });
+        
+        self.addEventListener('fetch', event => {
+          event.respondWith(
+            caches.match(event.request)
+              .then(response => response || fetch(event.request))
+          );
+        });
+      `));
+    }
+  </script>
+</body>
+</html>
