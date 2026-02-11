@@ -51,6 +51,22 @@
         .btn-press:active {
             transform: scale(0.95);
         }
+
+        @keyframes fadeUpdate { 
+            from { 
+                opacity: 0; transform: translateY(10px); 
+            } 
+            to { 
+                opacity: 1; transform: translateY(0); 
+            } 
+        }
+   
+        .page-active {
+            animation: fadeUpdate 0.25s ease-out;;
+        }
+        .page-hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="text-gray-900 font-sans h-screen flex-col overflow-hidde bg-gray50">
@@ -59,11 +75,32 @@
             <div>
                 <h1 class="text-xl font-bold tracking-tight text-black"> Xythobot</h1>
             </div>
-            <div>
+            <div class="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full">
             <div id="statusDot" class="w-2 h-2 rounded-full bg-red-500 transition-colors duration-300 ease-in-out"></div>
-        <span id="statusText" class="text-[10px] font-bold text-gray-500 upppercase tracking-wide"> Offline</span>    
+            <span id="statusText" class="text-[10px] font-bold text-gray-500 uppercase tracking-wide"> Offline</span>    
         </div>
         </div>
     </header>
+    <main class="flex-1 overflow-y-auto pt-16 pb-24 px-5 max-w-md mx-auto w-full no-scrollbar">
+        <div id="connectPage" class="page page-active h-full flex flex-col justify-center space-y-6">
+            <div class="text-center space-y-2 mb-4">
+                <div class="w-16 h-16 bg-gray-200 rounded-2xl mx-auto flex items-center justify-center text-3xl">֎</div>
+                <h2 class="text-2xl font-bold text-gray-900">Connect Bot</h2>
+                <p class="text-sm text-gray-500">Configure MQTT connection</p>
+            </div>
+            <div class="bg-white rounded-3xl shodow-soft border border-gray-100 p-6 space-y-5">
+                <div class="space-y-1">
+                    <label id="broker" value="wss://broker.hivemq.com:8884/mqtt">Broker URL</label>
+                    <input type="text" id="broker" value="wss://broker.hivemq.com:8884/mqtt" 
+                    class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:border-black focus:ring-0 outline-none transition">
+                </div>
+                <div class="space-y-1">
+                    <label id="topic" value="esp32/car/SATYA/7fA9xqL2wB3z9C1k/commands">Topic (SECRET)</label>
+                    <input type="text" id="topic" value="esp32/car/SATYA/7fA9xqL2wB3z9C1k/commands" 
+                    class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:border-black focus:ring-0 outline-none transition">
+                </div>
+            </div>
+        </div>
+    </main>
 </body>
 </html>
