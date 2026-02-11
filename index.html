@@ -31,10 +31,39 @@
             }
         }
     </script>
+    <style>
+        body {
+            -webkit-tab-highlight-color: transparent;
+            background-color: #f9fafb;
+        }
+        .no-scrollbar {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .btn-press {
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s ease;
+        }
+
+        .btn-press:active {
+            transform: scale(0.95);
+        }
+    </style>
 </head>
-<body>
-    <div>
-        <h1 class="text-2xl font-bold text-gray-800">Xythobot</h1>
-    </div>
+<body class="text-gray-900 font-sans h-screen flex-col overflow-hidde bg-gray50">
+    <header class="bg-white/90 backdrop-blur-md border-b border-gray-200 fixed top-0 w-full z-50 pt-safe-top">
+        <div class="px-5 h-14 flex items-center justify-between mx-auto max-w-md"> 
+            <div>
+                <h1 class="text-xl font-bold tracking-tight text-black"> Xythobot</h1>
+            </div>
+            <div>
+            <div id="statusDot" class="w-2 h-2 rounded-full bg-red-500 transition-colors duration-300 ease-in-out"></div>
+        <span id="statusText" class="text-[10px] font-bold text-gray-500 upppercase tracking-wide"> Offline</span>    
+        </div>
+        </div>
+    </header>
 </body>
 </html>
