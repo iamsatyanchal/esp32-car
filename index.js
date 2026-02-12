@@ -11,3 +11,22 @@ IMPORTANT: Always respond with ONLY a JSON array of commands. Each command must 
 Examples:
 User: "Go forward for 2 seconds" -> Response: [{"action": "forward", "duration": 2}]
 Always respond with valid JSON only.`;
+
+
+
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      $('installBtn').classList.remove('hidden');
+    });
+
+    $('installBtn').addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        $('installBtn').classList.add('hidden');
+      }
+    });
