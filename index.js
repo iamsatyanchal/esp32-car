@@ -1,4 +1,42 @@
-    const $ = id => document.getElementById(id);
+/*geoloctaion api try kr rhe hai hope work krega XD */
+const locationDiv = document.getElementById("location");
+
+if (!navigator.geolocation) {
+    locationDiv.innerHTML = "Geolocation not supported.. sorry";
+}
+else {
+    const watchId = navigator.geolocation.watchPosition(
+        (position) => {
+            const {
+                latitude,
+                longitude,
+                accuracy,
+                altitude,
+                speed } = position.coords;
+
+            locationDiv.innerHTML = `
+        Latitude: ${latitude}<br>
+        Longitude: ${longitude}<br>
+        Accuracy: ±${accuracy} meters<br>
+        Altitude: ${altitude ?? "N/A"}<br>
+        Speed: ${speed ?? "0"} m/s<br>
+        Updated: ${new Date().toLocaleTimeString()}
+                            `;
+        },
+        (error) => {
+            locationDiv.innerHTML = "GPS permission denied or unavailable";
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 1000,
+            maximumAge: 0
+        }
+    );
+}
+
+
+
+const $ = id => document.getElementById(id);
     //let client = null;
     let isExecutingCommands = false;
 
