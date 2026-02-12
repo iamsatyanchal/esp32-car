@@ -1,6 +1,8 @@
 # Demo Video : https://youtu.be/4lIo-_HLwI4?si=84_xpetgZaO4iB7U
 # 🚗 ESP32 Car - WiFi Remote Control
 
+#blog website: https://iamsatyanchal.vercel.app/blog/lets-make-a-esp32-car
+
 A smart car powered by ESP32 that can be controlled via WiFi from any mobile phone or computer.
 
 ## 📋 Table of Contents
