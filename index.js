@@ -59,3 +59,27 @@ document.querySelectorAll('.nav-item').forEach(item => {
         }
     });
 });
+
+
+function setStatus(status, isConnected = false) {
+    $('statusText').textContent = status;
+   $('statusDot').className = 
+       `w-2 h-2 rounded-full transition-colors duration-300 ${isConnected 
+        ? 
+      'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-red-500'}`;
+
+    if (isConnected) {
+        $('connectBtn').classList.add('hidden');
+        $('disconnectBtn').classList.remove('hidden');
+        if (!$('connectPage').classList.contains('page-hidden')){
+            switchPage('drivePage');
+        }
+    } else {
+        $('connectBtn').classList.remove('hidden');
+        $('disconnectBtn').classList.add('hidden');
+    }
+}
+
+function setAIStatus(s) {
+    $('aiStatus').textContent = s;
+}
