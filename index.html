@@ -1,106 +1,297 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xythobot</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                      sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
-                    },
-                    colors: {
-                        gray: {
-                               50: '#f9fafb',
-                               100: '#f3f4f6',
-                               200: '#e5e7eb',
-                               300: '#d1d5db',
-                               800: '#1f2937',
-                               900: '#111827',
-                        }
-                    },
-                    boxShadow: {
-                       'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
-                       'inner-light': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.02)',
-                       'press': 'inset 0 2px 4px 0 rgba(0,0,0,0.1)',   
-                    }
-                }
+  <meta charset="utf-8" />
+  <title>Xythobot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Xythobot" />
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+          },
+          colors: {
+            gray: {
+              50: '#f9fafb',
+              100: '#f3f4f6',
+              200: '#e5e7eb',
+              300: '#d1d5db',
+              800: '#1f2937',
+              900: '#111827',
             }
+          },
+          boxShadow: {
+            'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+            'inner-light': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.02)',
+            'press': 'inset 0 2px 4px 0 rgba(0,0,0,0.1)',
+          }
         }
-    </script>
-    <style>
-        body {
-            -webkit-tab-highlight-color: transparent;
-            background-color: #f9fafb;
-        }
-        .no-scrollbar {
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
+      }
+    }
+  </script>
+  
+  <style>
+    /* Clean UI Overrides */
+    body {
+      -webkit-tap-highlight-color: transparent;
+      background-color: #f9fafb;
+    }
+    
+    /* Hide scrollbar but keep functionality */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .btn-press {
-            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s ease;
-        }
+    /* Button Press Animation */
+    .btn-press {
+      transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s ease;
+    }
+    .btn-press:active {
+      transform: scale(0.96);
+    }
+    
+    /* Strict Visibility Control */
+    /* !important is crucial here to override Tailwind's flex/block classes */
+    .page-hidden { 
+      display: none !important; 
+    }
+    
+    .page-active { 
+      animation: fadeUpdate 0.25s ease-out; 
+    }
 
-        .btn-press:active {
-            transform: scale(0.95);
-        }
-
-        @keyframes fadeUpdate { 
-            from { 
-                opacity: 0; transform: translateY(10px); 
-            } 
-            to { 
-                opacity: 1; transform: translateY(0); 
-            } 
-        }
-   
-        .page-active {
-            animation: fadeUpdate 0.25s ease-out;;
-        }
-        .page-hidden {
-            display: none !important;
-        }
-    </style>
+    @keyframes fadeUpdate { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* Range Slider - Minimalist */
+    input[type=range] {
+      -webkit-appearance: none;
+      background: transparent;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 20px; width: 20px;
+      border-radius: 50%;
+      background: #000;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      margin-top: -8px;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%; height: 4px;
+      background: #e5e7eb;
+      border-radius: 2px;
+    }
+  </style>
 </head>
-<body class="text-gray-900 font-sans h-screen flex-col overflow-hidde bg-gray50">
-    <header class="bg-white/90 backdrop-blur-md border-b border-gray-200 fixed top-0 w-full z-50 pt-safe-top">
-        <div class="px-5 h-14 flex items-center justify-between mx-auto max-w-md"> 
-            <div>
-                <h1 class="text-xl font-bold tracking-tight text-black"> Xythobot</h1>
-            </div>
-            <div class="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full">
-            <div id="statusDot" class="w-2 h-2 rounded-full bg-red-500 transition-colors duration-300 ease-in-out"></div>
-            <span id="statusText" class="text-[10px] font-bold text-gray-500 uppercase tracking-wide"> Offline</span>    
+
+<body class="text-gray-900 font-sans h-screen flex flex-col overflow-hidden bg-gray-50">
+
+  <header class="bg-white/90 backdrop-blur-md border-b border-gray-200 fixed top-0 w-full z-50 pt-safe-top">
+    <div class="px-5 h-14 flex items-center justify-between max-w-md mx-auto">
+      <div>
+        <h1 class="text-xl font-bold tracking-tight text-black">Xythobot</h1>
+      </div>
+      <div class="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full">
+        <div id="statusDot" class="w-2 h-2 rounded-full bg-red-500 transition-colors duration-300"></div>
+        <span id="statusText" class="text-[10px] font-bold text-gray-500 uppercase tracking-wide">Offline</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 overflow-y-auto pt-16 pb-24 px-5 max-w-md mx-auto w-full no-scrollbar">
+
+   <div id="connectPage" class="page page-active h-full flex flex-col justify-center space-y-6">
+      <div class="text-center space-y-2 mb-4">
+        <div class="w-16 h-16 bg-gray-200 rounded-2xl mx-auto flex items-center justify-center text-3xl">֎</div>
+        <h2 class="text-2xl font-bold text-gray-900">Connect Bot</h2>
+        <p class="text-sm text-gray-500">Configure MQTT connection</p>
+      </div>
+
+      <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 space-y-5">
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Broker URL</label>
+          <input id="broker" value="wss://broker.hivemq.com:8884/mqtt" 
+            class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:border-black focus:ring-0 outline-none transition" />
         </div>
+        
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Topic</label>
+          <input id="topic" value="esp32/car/SATYA/7fA9xqL2wB3z9C1k/commands" 
+            class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:border-black focus:ring-0 outline-none transition" />
         </div>
-    </header>
-    <main class="flex-1 overflow-y-auto pt-16 pb-24 px-5 max-w-md mx-auto w-full no-scrollbar">
-        <div id="connectPage" class="page page-active h-full flex flex-col justify-center space-y-6">
-            <div class="text-center space-y-2 mb-4">
-                <div class="w-16 h-16 bg-gray-200 rounded-2xl mx-auto flex items-center justify-center text-3xl">֎</div>
-                <h2 class="text-2xl font-bold text-gray-900">Connect Bot</h2>
-                <p class="text-sm text-gray-500">Configure MQTT connection</p>
-            </div>
-            <div class="bg-white rounded-3xl shodow-soft border border-gray-100 p-6 space-y-5">
-                <div class="space-y-1">
-                    <label id="broker" value="wss://broker.hivemq.com:8884/mqtt">Broker URL</label>
-                    <input type="text" id="broker" value="wss://broker.hivemq.com:8884/mqtt" 
-                    class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:border-black focus:ring-0 outline-none transition">
-                </div>
-                <div class="space-y-1">
-                    <label id="topic" value="esp32/car/SATYA/7fA9xqL2wB3z9C1k/commands">Topic (SECRET)</label>
-                    <input type="text" id="topic" value="esp32/car/SATYA/7fA9xqL2wB3z9C1k/commands" 
-                    class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:border-black focus:ring-0 outline-none transition">
-                </div>
-            </div>
+
+        <button id="connectBtn" class="w-full bg-black text-white py-4 rounded-xl text-sm font-bold uppercase tracking-wider shadow-lg hover:bg-gray-800 active:scale-95 transition-all">
+          Connect to Server
+        </button>
+        
+        <button id="disconnectBtn" class="w-full bg-white border border-gray-200 text-gray-900 py-3 rounded-xl text-sm font-bold uppercase tracking-wider hover:bg-gray-50 active:scale-95 transition hidden">
+          Disconnect
+        </button>
+      </div>
+    </div>
+
+   
+    <div id="drivePage" class="page page-hidden h-full flex flex-col justify-center">
+      <div class="flex-1 flex flex-col justify-center items-center py-6">
+        
+        <div class="relative w-72 h-72 bg-white rounded-[50px] shadow-soft border border-gray-100 flex items-center justify-center mb-10">
+          <div class="grid grid-cols-3 gap-4 w-52 h-52">
+             <div></div>
+             <button id="forward" class="btn-press bg-gray-100 hover:bg-gray-200 rounded-3xl flex items-center justify-center text-gray-800 shadow-inner-light">
+               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+             </button>
+             <div></div>
+             
+             <button id="left" class="btn-press bg-gray-100 hover:bg-gray-200 rounded-3xl flex items-center justify-center text-gray-800 shadow-inner-light">
+               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+             </button>
+             
+             <button id="stop" class="btn-press bg-red-50 hover:bg-red-100 active:bg-red-500 active:text-white rounded-full flex items-center justify-center text-red-500 transition-colors border-2 border-transparent active:border-red-600 shadow-sm">
+               <div class="w-5 h-5 rounded-sm bg-current"></div>
+             </button>
+             
+             <button id="right" class="btn-press bg-gray-100 hover:bg-gray-200 rounded-3xl flex items-center justify-center text-gray-800 shadow-inner-light">
+               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+             </button>
+             
+             <div></div>
+             <button id="backward" class="btn-press bg-gray-100 hover:bg-gray-200 rounded-3xl flex items-center justify-center text-gray-800 shadow-inner-light">
+               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+             </button>
+             <div></div>
+          </div>
         </div>
-    </main>
+<div id="location">Waiting for GPS…</div>
+
+        <div class="w-full bg-white p-2 rounded-2xl border border-gray-200 shadow-sm flex items-center gap-2">
+          <input id="custom" placeholder="Run command..." class="flex-1 px-4 py-3 text-sm bg-transparent outline-none text-gray-800 placeholder-gray-400 font-medium" />
+          <button id="sendCustom" class="bg-black text-white px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-gray-800 transition">Send</button>
+        </div>
+        <div id="lastCommand" class="mt-4 text-[10px] font-mono text-gray-400 h-4"></div>
+        
+      
+      
+      </div>
+  
+    </div>
+
+    <div id="aiPage" class="page page-hidden h-full flex flex-col">
+      <div class="flex-1 bg-white rounded-3xl shadow-soft border border-gray-100 flex flex-col overflow-hidden mb-4 relative">
+        <div class="px-5 py-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+          <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Groq Intelligence</span>
+          <span id="aiStatus" class="text-[10px] font-bold text-black animate-pulse"></span>
+        </div>
+        
+        <div id="aiChat" class="flex-1 p-5 overflow-y-auto space-y-4">
+           <div class="flex justify-start">
+             <div class="bg-gray-100 px-4 py-3 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[85%] shadow-sm">
+               <strong>Xythobot AI:</strong> Connected to Qwen 32B. Give me a mission.
+             </div>
+           </div>
+        </div>
+      </div>
+      
+   
+      <div class="bg-white p-2 rounded-2xl shadow-soft border border-gray-100 flex gap-2">
+         <input id="aiInput" placeholder="Command the bot..." class="flex-1 pl-4 bg-transparent outline-none text-sm text-gray-800 font-medium" />
+         <button id="sendAI" class="bg-black text-white p-3.5 rounded-xl hover:bg-gray-800 transition shadow-lg">
+           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+         </button>
+      </div>
+    </div>
+
+    <div id="settingsPage" class="page page-hidden space-y-6 pt-4">
+      <div id="location">Waiting for GPS…</div>
+      <div class="bg-white rounded-2xl shadow-soft border border-gray-100 overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/30">
+           <h3 class="text-sm font-bold text-gray-900">API Configuration</h3>
+        </div>
+        <div class="p-5 space-y-2">
+          <label class="text-xs font-semibold text-gray-500 uppercase">Groq API Key</label>
+          <input id="apiKey" type="password" placeholder="gsk_..." 
+            class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:border-black focus:ring-0 outline-none transition" />
+          <p class="text-[10px] text-gray-400">Required for AI Chat functionality.</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-soft border border-gray-100 overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/30">
+           <h3 class="text-sm font-bold text-gray-900">Controls</h3>
+        </div>
+        
+        <div class="divide-y divide-gray-50">
+          <div class="flex items-center justify-between px-5 py-4">
+            <span class="text-sm font-medium text-gray-700">Haptic Feedback</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="vibrationToggle" class="sr-only peer" checked>
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
+            </label>
+          </div>
+          
+          <div class="flex items-center justify-between px-5 py-4">
+             <span class="text-sm font-medium text-gray-700">Sound Effects</span>
+             <label class="relative inline-flex items-center cursor-pointer">
+               <input type="checkbox" id="soundToggle" class="sr-only peer">
+               <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
+             </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-soft border border-gray-100 p-5">
+         <div class="flex justify-between items-center mb-4">
+            <span class="text-sm font-medium text-gray-700">Command Timeout</span>
+            <span id="timeoutValue" class="text-xs font-mono bg-gray-100 px-2 py-1 rounded text-gray-600">500ms</span>
+         </div>
+         <input type="range" id="timeoutSlider" min="100" max="2000" value="500" class="w-full">
+      </div>
+      
+      <div class="text-center pt-4 pb-8">
+         <button id="installBtn" class="hidden mx-auto bg-black text-white px-6 py-2 rounded-full text-xs font-bold uppercase tracking-wide shadow-lg mb-4">Install App</button>
+         <p class="text-[10px] text-gray-400 uppercase tracking-widest">Xythobot v3.0</p>
+      </div>
+    </div>
+  </main>
+
+  <nav class="bg-white border-t border-gray-200 pb-safe-bottom fixed bottom-0 w-full z-40 shadow-[0_-5px_20px_rgba(0,0,0,0.02)]">
+    <div class="flex justify-around items-center h-16 max-w-md mx-auto">
+      
+      <button class="nav-item active flex-1 flex flex-col items-center justify-center gap-1 group" data-page="connectPage">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 group-[.active]:text-black transition-colors">
+          <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line>
+        </svg>
+        <span class="text-[10px] font-bold text-gray-400 group-[.active]:text-black transition-colors">Connect</span>
+      </button>
+
+      <button class="nav-item flex-1 flex flex-col items-center justify-center gap-1 group" data-page="drivePage">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 group-[.active]:text-black transition-colors">
+          <circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>
+        </svg>
+        <span class="text-[10px] font-bold text-gray-400 group-[.active]:text-black transition-colors">Control</span>
+      </button>
+
+      <button class="nav-item flex-1 flex flex-col items-center justify-center gap-1 group" data-page="aiPage">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 group-[.active]:text-black transition-colors">
+          <path d="M12 2a10 10 0 1 0 10 10H12V2z"></path><path d="M12 2a10 10 0 0 1 10 10H12V2z"></path><path d="M2.05 10.5a10 10 0 0 1 9.95-8.5v8.5H2.05z"></path>
+        </svg>
+        <span class="text-[10px] font-bold text-gray-400 group-[.active]:text-black transition-colors">AI</span>
+      </button>
+
+      <button class="nav-item flex-1 flex flex-col items-center justify-center gap-1 group" data-page="settingsPage">
+         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 group-[.active]:text-black transition-colors">
+          <circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+         </svg>
+        <span class="text-[10px] font-bold text-gray-400 group-[.active]:text-black transition-colors">Settings</span>
+      </button>
+
+    </div>
+  </nav>
+
 </body>
 </html>
