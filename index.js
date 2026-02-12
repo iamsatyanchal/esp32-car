@@ -248,7 +248,10 @@ function bindHold(btnId, command) {
         btn.classList.remove('bg-gray-200', 'scale-95');
     };
     btn.onmousedown = start; btn.onmouseup = stop; btn.onmouseleave = stop;
-    btn.ontouchstart = (e) => { e.preventDefault(); start(); }; btn.ontouchend = stop;
+    btn.ontouchstart = (e) => { 
+        e.preventDefault(); start(); 
+    }; 
+    btn.ontouchend = stop;
 }
 
 function init() {
@@ -258,7 +261,7 @@ function init() {
     bindHold('backward', 'backward');
     bindHold('left', 'left');
     bindHold('right', 'right');
-    bindHold('light', 'light');
+    // bindHold('light', 'light');
 
     $('stop').onclick = () => {
         publish('stop');
@@ -291,3 +294,5 @@ function init() {
     $('apiKey').onchange = (e) => localStorage.setItem('groq_api_key', e.target.value);
     setStatus('REQUIRED');
 }
+
+document.addEventListener('DOMContentLoaded', init);
