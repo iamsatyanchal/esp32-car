@@ -126,7 +126,7 @@ function addChatMessage(sender, message, isError = false) {
     const chat = $('aiChat');
     const div = document.createElement('div');
 
-    if (sender === 'You') {
+    if (sender === 'You' || sender === "you") {
         div.className = 'flex justify-end';
         div.innerHTML = `
         <div class="bg-black text-white px-4 py-2.5 rounded-2xl rounded-tr-sm text-sm shadow-sm max-w-[85%]">
@@ -145,3 +145,26 @@ function addChatMessage(sender, message, isError = false) {
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
 }
+
+
+
+/*this a prebubilt code for json parsing so i used it.. as it is bro*/
+function cleanAndParseJSON(text) {
+    try {
+        let cleaned = text.replace(/<think>[\s\S]*?<\/think>/gi, '').replace(/```json\s*/g, '').replace(/```\s*/g, '').replace(/<[^>]*>/g, '').trim();
+        const jsonStart = Math.min(cleaned.indexOf('[') !== -1 ? cleaned.indexOf('[') : Infinity, cleaned.indexOf('{') !== -1 ? cleaned.indexOf('{') : Infinity);
+        if (jsonStart !== Infinity) {
+            cleaned = cleaned.substring(jsonStart);
+        }
+        const lastBracket = Math.max(cleaned.lastIndexOf(']'), cleaned.lastIndexOf('}'));
+        if (lastBracket !== -1) {
+            cleaned = cleaned.substring(0, lastBracket + 1);
+        }
+        const parsed = JSON.parse(cleaned);
+        return Array.isArray(parsed) ? parsed : [parsed];
+    } catch (e) {
+        console.error(e);
+        throw new Error('Failed to parse command.');
+    }
+}
+
