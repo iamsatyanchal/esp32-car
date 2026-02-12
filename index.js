@@ -1,5 +1,5 @@
     const $ = id => document.getElementById(id);
-    let client = null;
+    //let client = null;
     let isExecutingCommands = false;
 
     const SYSTEM_PROMPT = `
@@ -16,17 +16,46 @@ Always respond with valid JSON only.`;
 
     let deferredPrompt;
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      $('installBtn').classList.remove('hidden');
+    // window.addEventListener('beforeinstallprompt', (e) => {
+    //   e.preventDefault();
+    //   deferredPrompt = e;
+    //   $('installBtn').classList.remove('hidden');
+    // });
+
+    // $('installBtn').addEventListener('click', async () => {
+    //   if (deferredPrompt) {
+    //     deferredPrompt.prompt();
+    //     const { outcome } = await deferredPrompt.userChoice;
+    //     deferredPrompt = null;
+    //     $('installBtn').classList.add('hidden');
+    //   }
+    // });
+
+
+function switchPage(pageId) {
+
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('page-active');
+        page.classList.add('page-hidden');
     });
 
-    $('installBtn').addEventListener('click', async () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        $('installBtn').classList.add('hidden');
-      }
+    const target = $(pageId);
+    if (target) {
+        target.classList.remove('page-hidden');
+        target.classList.add('page-active');
+    }
+    const navBtn = document.querySelector(`[data-page="${pageId}"]`);
+    if (navBtn) {
+        navBtn.classList.add('active');
+    }
+}
+
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+        switchPage(item.getAttribute('data-page'));
+        if (navigator.vibrate && $('vibrationToggle').checked) {
+            navigator.vibrate(10);
+        }
     });
+});
