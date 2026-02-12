@@ -87,7 +87,7 @@ function setAIStatus(s) {
 
 function connect() {
     const broker = $('broker').value.trim();
-    setStatus('MAKING', false);
+    setStatus('MAKING..', false);
     try {
         client = mqtt.connect(broker, {
             clientId: 'xytho-' + Math.random().toString(16).slice(2, 10),
@@ -118,4 +118,30 @@ function publish(cmd) {
     client.publish(topic, cmd);
     $('lastCommand').textContent = '> ' + cmd;
     return true;
+}
+
+
+
+function addChatMessage(sender, message, isError = false) {
+    const chat = $('aiChat');
+    const div = document.createElement('div');
+
+    if (sender === 'You') {
+        div.className = 'flex justify-end';
+        div.innerHTML = `
+        <div class="bg-black text-white px-4 py-2.5 rounded-2xl rounded-tr-sm text-sm shadow-sm max-w-[85%]">
+            ${message}
+        </div>
+        `;
+    }
+    else {
+        div.className = 'flex justify-start';
+        div.innerHTML = `
+        <div class="bg-gray-100 text-gray-800 px-4 py-2.5 rounded-2xl rounded-tl-sm text-sm border border-gray-200 max-w-[85%] ${isError ? 'text-red-600 bg-red-50 border-red-100' : ''}">
+            ${message}
+        </div>
+        `;
+    }
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
 }
