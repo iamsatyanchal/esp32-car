@@ -63,10 +63,10 @@ document.querySelectorAll('.nav-item').forEach(item => {
 
 function setStatus(status, isConnected = false) {
     $('statusText').textContent = status;
-   $('statusDot').className = 
+   /*$('statusDot').className = 
        `w-2 h-2 rounded-full transition-colors duration-300 ${isConnected 
         ? 
-      'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-red-500'}`;
+      'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-red-500'}`;*/
 
     if (isConnected) {
         $('connectBtn').classList.add('hidden');
@@ -82,4 +82,40 @@ function setStatus(status, isConnected = false) {
 
 function setAIStatus(s) {
     $('aiStatus').textContent = s;
+}
+
+
+function connect() {
+    const broker = $('broker').value.trim();
+    setStatus('MAKING', false);
+    try {
+        client = mqtt.connect(broker, {
+            clientId: 'xytho-' + Math.random().toString(16).slice(2, 10),
+            clean: true, keepalive: 30
+        });
+    } catch (e) {
+        setStatus('ERROR', false);
+        return;
+    }
+    client.on('connect', () => setStatus('MADE', true));
+    client.on('error', (err) => setStatus('ERR', false));
+    client.on('close', () => setStatus('REQUIRED', false));
+}
+
+function disconnect() {
+    if (client) client.end();
+    client = null;
+    setStatus('REQUIRED', false);
+}
+
+
+
+function publish(cmd) {
+    const topic = $('topic').value.trim();
+    if (!client || !client.connected) {
+        return false;
+    }
+    client.publish(topic, cmd);
+    $('lastCommand').textContent = '> ' + cmd;
+    return true;
 }
