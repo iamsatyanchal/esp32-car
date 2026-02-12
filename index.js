@@ -168,3 +168,126 @@ function cleanAndParseJSON(text) {
     }
 }
 
+
+
+async function executeCommands(commands) {
+    if (isExecutingCommands) return;
+    isExecutingCommands = true;
+
+    for (let i = 0; i < commands.length; i++) {
+        const cmd = commands[i];
+        if (!cmd.action) continue;
+        //setAIStatus("working..")
+        setAIStatus(`ACTION: ${cmd.action.toUpperCase()}`);
+        if (!publish(cmd.action)) break;
+
+        if (cmd.duration > 0) {
+            await new Promise(resolve => setTimeout(resolve, cmd.duration * 1000));
+            if (!['stop', 'honk', 'led_on', 'led_off', 'buzzer'].includes(cmd.action)) publish('stop');
+        }
+    }
+    isExecutingCommands = false;
+    setAIStatus('READY...');
+    addChatMessage('Xythobot', 'Mission accomplished :)');
+}
+
+async function callAI(userMessage) {
+    $('apiKey').value = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; // whoottt im not gonna show you my api bruuhh
+    const apiKey = $('apiKey').value.replace("..12345", "").trim();
+    if (!apiKey) {
+        addChatMessage('System', 'Please enter your Groq API Key in the Settings tab.', true);
+        return;
+    }
+    setAIStatus('THINKING...');
+    try {
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                messages: [
+                    { role: "system", content: SYSTEM_PROMPT },
+                    { role: "user", content: userMessage }
+                ],
+                model: "qwen/qwen3-32b",
+                temperature: 0.6,
+                max_completion_tokens: 4096,
+                top_p: 0.95,
+                stream: false,
+                response_format: { type: "json_object" }
+            })
+        });
+
+        if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(errData.error?.message || `API error: ${response.status}`);
+        }
+        const data = await response.json();
+        const content = data.choices[0].message.content;
+        const commands = cleanAndParseJSON(content);
+        addChatMessage('Xythobot', `Processing ${commands.length} actions...`);
+        await executeCommands(commands);
+
+    } catch (error) {
+        setAIStatus('ERROR');
+        addChatMessage('System', `Error: ${error.message}`, true);
+    }
+}
+
+function bindHold(btnId, command) {
+    const btn = $(btnId);
+    const start = () => {
+        publish(command);
+        if (navigator.vibrate && $('vibrationToggle').checked) navigator.vibrate(15);
+        btn.classList.add('bg-gray-200', 'scale-95');
+    };
+    const stop = () => {
+        publish('stop');
+        btn.classList.remove('bg-gray-200', 'scale-95');
+    };
+    btn.onmousedown = start; btn.onmouseup = stop; btn.onmouseleave = stop;
+    btn.ontouchstart = (e) => { e.preventDefault(); start(); }; btn.ontouchend = stop;
+}
+
+function init() {
+    $('connectBtn').onclick = connect;
+    $('disconnectBtn').onclick = disconnect;
+    bindHold('forward', 'forward');
+    bindHold('backward', 'backward');
+    bindHold('left', 'left');
+    bindHold('right', 'right');
+    bindHold('light', 'light');
+
+    $('stop').onclick = () => {
+        publish('stop');
+        if (navigator.vibrate && $('vibrationToggle').checked) navigator.vibrate(20);
+    };
+    $('sendCustom').onclick = () => {
+        const v = $('custom').value.trim();
+        if (v) {
+            publish(v);
+            $('custom').value = '';
+        }
+    };
+    $('custom').onkeypress = (e) => {
+        if (e.key === 'Enter') $('sendCustom').click();
+    };
+    $('sendAI').onclick = async () => {
+        const v = $('aiInput').value.trim();
+        if (v) {
+            addChatMessage('You', v);
+            $('aiInput').value = '';
+            await callAI(v);
+        }
+    };
+    $('aiInput').onkeypress = (e) => {
+        if (e.key === 'Enter') $('sendAI').click();
+    };
+    $('timeoutSlider').oninput = (e) => $('timeoutValue').textContent = e.target.value + 'ms';
+    const savedKey = localStorage.getItem('groq_api_key');
+    if (savedKey) $('apiKey').value = savedKey;
+    $('apiKey').onchange = (e) => localStorage.setItem('groq_api_key', e.target.value);
+    setStatus('REQUIRED');
+}
